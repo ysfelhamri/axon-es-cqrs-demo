@@ -40,6 +40,7 @@ public class AccountAnalyticsEventHandler {
         accountAnalytics.setNumberCreditOperations(accountAnalytics.getNumberCreditOperations()+1);
         accountAnalytics.setBalance(accountAnalytics.getBalance()+event.getAmount());
         accountAnalyticsRepo.save(accountAnalytics);
+        queryUpdateEmitter.emit(e->true, accountAnalytics);
     }
     @EventHandler
     public void on(AccountDebitedEvent event){
@@ -48,6 +49,7 @@ public class AccountAnalyticsEventHandler {
         accountAnalytics.setNumberDebitOperations(accountAnalytics.getNumberDebitOperations()+1);
         accountAnalytics.setBalance(accountAnalytics.getBalance()-event.getAmount());
         accountAnalyticsRepo.save(accountAnalytics);
+        queryUpdateEmitter.emit(e->true, accountAnalytics);
     }
 
 
