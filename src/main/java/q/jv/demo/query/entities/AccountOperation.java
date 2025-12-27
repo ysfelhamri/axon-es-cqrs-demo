@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import q.jv.demo.enums.OperationType;
 
+import java.time.Instant;
 import java.util.Date;
 @Entity
 @Getter
@@ -14,7 +15,7 @@ import java.util.Date;
 public class AccountOperation {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Date date;
+    private Instant date;
     private Double amount;
     @Enumerated(EnumType.STRING)
     private OperationType operationType;
