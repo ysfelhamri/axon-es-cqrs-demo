@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 import q.jv.analyticsservice.entities.AccountAnalytics;
 import q.jv.analyticsservice.repositories.AccountAnalyticsRepository;
 import q.jv.demo.events.AccountCreatedEvent;
+import q.jv.demo.events.AccountCreditedEvent;
+import q.jv.demo.events.AccountDebitedEvent;
 
 @Component
 @Slf4j
@@ -32,6 +34,24 @@ public class AccountAnalyticsEventHandler {
         accountAnalyticsRepo.save(accountAnalytics);
     }
 
+    @EventHandler
+    public void on(AccountCreditedEvent event){
+        log.info("AccountCreatedEvent received");
+        AccountAnalytics accountAnalytics=accountAnalyticsRepo.findByAccountId(event.getAccountId());
+        accountAnalytics.setTotalCredit(accountAnalytics.getTotalCredit()+event.getAmount());
+        accountAnalytics.setNumberCreditOperations(accountAnalytics.getNumberCreditOperations()+1);
+        accountAnalytics.setBalance(accountAnalytics.getBalance()+event.getAmount());
+        accountAnalyticsRepo.save(accountAnalytics);
+    }
+    @EventHandler
+    public void on(AccountDebitedEvent event){
+        log.info("AccountDebitedEvent received");
+        AccountAnalytics accountAnalytics=accountAnalyticsRepo.findByAccountId(event.getAccountId());
+        accountAnalytics.setTotalDebit(accountAnalytics.getTotalDebit()+event.getAmount());
+        accountAnalytics.setNumberDebitOperations(accountAnalytics.getNumberDebitOperations()+1);
+        accountAnalytics.setBalance(accountAnalytics.getBalance()-event.getAmount());
+        accountAnalyticsRepo.save(accountAnalytics);
+    }
 
 
 }
