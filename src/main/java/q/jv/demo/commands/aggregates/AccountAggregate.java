@@ -9,6 +9,7 @@ import org.axonframework.spring.stereotype.Aggregate;
 import q.jv.demo.commands.commands.AddAccountCommand;
 import q.jv.demo.commands.commands.CreditAccountCommand;
 import q.jv.demo.enums.AccountStatus;
+import q.jv.demo.events.AccountActivatedEvent;
 import q.jv.demo.events.AccountCreatedEvent;
 import q.jv.demo.events.AccountCreditedEvent;
 
@@ -32,6 +33,10 @@ public class AccountAggregate {
                 AccountStatus.CREATED,
                 command.getCurrency()
         ));
+        AggregateLifecycle.apply(new AccountActivatedEvent(
+                command.getId(),
+                AccountStatus.ACTIVATED
+        ));
     }
 
     @EventSourcingHandler
@@ -40,6 +45,14 @@ public class AccountAggregate {
 
         this.accountId = event.getAccountId();
         this.balance = event.getInitialBalance();
+        this.status = event.getStatus();
+    }
+
+    @EventSourcingHandler
+    public void on(AccountActivatedEvent event){
+        log.info("############ AccountActivatedEvent Occurred ############");
+
+        this.accountId = event.getAccountId();
         this.status = event.getStatus();
     }
 
