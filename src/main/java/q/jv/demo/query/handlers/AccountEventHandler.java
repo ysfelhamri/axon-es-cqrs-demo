@@ -3,6 +3,7 @@ package q.jv.demo.query.handlers;
 import lombok.extern.slf4j.Slf4j;
 import org.axonframework.eventhandling.EventHandler;
 import org.axonframework.eventhandling.EventMessage;
+import org.axonframework.queryhandling.QueryUpdateEmitter;
 import org.springframework.stereotype.Component;
 import q.jv.demo.enums.OperationType;
 import q.jv.demo.events.*;
@@ -14,12 +15,14 @@ import q.jv.demo.query.repository.OperationRepository;
 @Component
 @Slf4j
 public class AccountEventHandler {
+    private final QueryUpdateEmitter queryUpdateEmitter;
     private AccountRepository accountRepository;
     private OperationRepository operationRepository;
 
-    public AccountEventHandler(AccountRepository accountRepository, OperationRepository operationRepository) {
+    public AccountEventHandler(AccountRepository accountRepository, OperationRepository operationRepository, QueryUpdateEmitter queryUpdateEmitter) {
         this.accountRepository = accountRepository;
         this.operationRepository = operationRepository;
+        this.queryUpdateEmitter = queryUpdateEmitter;
     }
 
     @EventHandler
@@ -67,6 +70,7 @@ public class AccountEventHandler {
         operationRepository.save(accountOperation);
         account.setBalance(account.getBalance() - accountOperation.getAmount());
         accountRepository.save(account);
+        queryUpdateEmitter.emit(e->true, accountOperation);
     }
 
     @EventHandler
@@ -84,5 +88,6 @@ public class AccountEventHandler {
         operationRepository.save(accountOperation);
         account.setBalance(account.getBalance() + accountOperation.getAmount());
         accountRepository.save(account);
+        queryUpdateEmitter.emit(e->true, accountOperation);
     }
 }
