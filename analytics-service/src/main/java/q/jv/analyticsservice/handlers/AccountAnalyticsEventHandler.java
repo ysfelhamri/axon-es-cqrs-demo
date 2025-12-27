@@ -21,7 +21,6 @@ public class AccountAnalyticsEventHandler {
 
     @EventHandler
     public void on(AccountCreatedEvent event){
-        log.info("AccountCreatedEvent received");
         AccountAnalytics accountAnalytics=AccountAnalytics.builder()
                 .accountId(event.getAccountId())
                 .status(event.getStatus().toString())
@@ -36,7 +35,6 @@ public class AccountAnalyticsEventHandler {
 
     @EventHandler
     public void on(AccountCreditedEvent event){
-        log.info("AccountCreatedEvent received");
         AccountAnalytics accountAnalytics=accountAnalyticsRepo.findByAccountId(event.getAccountId());
         accountAnalytics.setTotalCredit(accountAnalytics.getTotalCredit()+event.getAmount());
         accountAnalytics.setNumberCreditOperations(accountAnalytics.getNumberCreditOperations()+1);
@@ -45,7 +43,6 @@ public class AccountAnalyticsEventHandler {
     }
     @EventHandler
     public void on(AccountDebitedEvent event){
-        log.info("AccountDebitedEvent received");
         AccountAnalytics accountAnalytics=accountAnalyticsRepo.findByAccountId(event.getAccountId());
         accountAnalytics.setTotalDebit(accountAnalytics.getTotalDebit()+event.getAmount());
         accountAnalytics.setNumberDebitOperations(accountAnalytics.getNumberDebitOperations()+1);
