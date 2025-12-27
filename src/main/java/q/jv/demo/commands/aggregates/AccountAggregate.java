@@ -9,11 +9,9 @@ import org.axonframework.spring.stereotype.Aggregate;
 import q.jv.demo.commands.commands.AddAccountCommand;
 import q.jv.demo.commands.commands.CreditAccountCommand;
 import q.jv.demo.commands.commands.DebitAccountCommand;
+import q.jv.demo.commands.commands.UpdateStatusCommand;
 import q.jv.demo.enums.AccountStatus;
-import q.jv.demo.events.AccountActivatedEvent;
-import q.jv.demo.events.AccountCreatedEvent;
-import q.jv.demo.events.AccountCreditedEvent;
-import q.jv.demo.events.AccountDebitedEvent;
+import q.jv.demo.events.*;
 
 @Aggregate
 @Slf4j
@@ -98,5 +96,23 @@ public class AccountAggregate {
 
         this.accountId = event.getAccountId();
         this.balance -= event.getAmount();
+    }
+
+    @CommandHandler
+    public void handle(UpdateStatusCommand command) {
+        log.info("############ UpdateStatusCommand Received ############");
+        if(command.getAccountStatus()== status) throw new RuntimeException("Account "+command.getId()+" is already "+command.getAccountStatus());
+        AggregateLifecycle.apply(new AccountStatusUpdateEvent(
+                command.getId(),
+                command.getAccountStatus()
+        ));
+    }
+
+    @EventSourcingHandler
+    public void on(AccountStatusUpdateEvent event){
+        log.info("############ AccountStatusUpdateEvent Occurred ############");
+
+        this.accountId = event.getAccountId();
+        this.status = event.getStatus();
     }
 }

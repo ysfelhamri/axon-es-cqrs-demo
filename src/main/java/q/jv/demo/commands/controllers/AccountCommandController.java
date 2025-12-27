@@ -5,9 +5,11 @@ import org.springframework.web.bind.annotation.*;
 import q.jv.demo.commands.commands.AddAccountCommand;
 import q.jv.demo.commands.commands.CreditAccountCommand;
 import q.jv.demo.commands.commands.DebitAccountCommand;
+import q.jv.demo.commands.commands.UpdateStatusCommand;
 import q.jv.demo.dtos.AddNewAccountRequestDTO;
 import q.jv.demo.dtos.CreditAccountRequestDTO;
 import q.jv.demo.dtos.DebitAccountRequestDTO;
+import q.jv.demo.dtos.UpdateStatusRequestDTO;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -49,6 +51,16 @@ public class AccountCommandController {
         ));
         return response;
     }
+
+    @PutMapping("/updateStatus")
+    public CompletableFuture<String> updateStatus(@RequestBody UpdateStatusRequestDTO request){
+        CompletableFuture<String> response =  commandGateway.send(new UpdateStatusCommand(
+                request.accountId(),
+                request.accountStatus()
+        ));
+        return response;
+    }
+
 
     @ExceptionHandler(Exception.class)
     public String exceptionHandler(Exception exception){
