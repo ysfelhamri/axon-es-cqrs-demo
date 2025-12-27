@@ -8,10 +8,12 @@ import org.axonframework.modelling.command.AggregateLifecycle;
 import org.axonframework.spring.stereotype.Aggregate;
 import q.jv.demo.commands.commands.AddAccountCommand;
 import q.jv.demo.commands.commands.CreditAccountCommand;
+import q.jv.demo.commands.commands.DebitAccountCommand;
 import q.jv.demo.enums.AccountStatus;
 import q.jv.demo.events.AccountActivatedEvent;
 import q.jv.demo.events.AccountCreatedEvent;
 import q.jv.demo.events.AccountCreditedEvent;
+import q.jv.demo.events.AccountDebitedEvent;
 
 @Aggregate
 @Slf4j
@@ -75,5 +77,26 @@ public class AccountAggregate {
 
         this.accountId = event.getAccountId();
         this.balance += event.getAmount();
+    }
+
+    @CommandHandler
+    public void handle(DebitAccountCommand command) {
+        log.info("############ DebitAccountCommand Received ############");
+        if(!status.equals(AccountStatus.ACTIVATED)) throw new RuntimeException("Account "+command.getId()+" must be activated");
+        if(balance < command.getAmount()) throw new RuntimeException("Insufficient Balance for the debit operation");
+        if(command.getAmount()<=0) throw new IllegalArgumentException("Amount must be positive");
+        AggregateLifecycle.apply(new AccountDebitedEvent(
+                command.getId(),
+                command.getAmount(),
+                command.getCurrency()
+        ));
+    }
+
+    @EventSourcingHandler
+    public void on(AccountDebitedEvent event){
+        log.info("############ AccountDebitedEvent Occurred ############");
+
+        this.accountId = event.getAccountId();
+        this.balance -= event.getAmount();
     }
 }
