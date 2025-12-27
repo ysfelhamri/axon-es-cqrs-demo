@@ -6,9 +6,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.axonframework.messaging.responsetypes.ResponseTypes;
 import org.axonframework.queryhandling.QueryGateway;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import q.jv.analyticsservice.entities.AccountAnalytics;
+import q.jv.analyticsservice.queries.GetAccountAnalyticsByAccountId;
 import q.jv.analyticsservice.queries.GetAllAccountAnalytics;
 
 import java.util.List;
@@ -23,5 +25,10 @@ public class AccountAnalyticsController {
     @GetMapping("/accountAnalytics")
     public CompletableFuture<List<AccountAnalytics>> accountAnalytics(){
         return queryGateway.query(new GetAllAccountAnalytics(), ResponseTypes.multipleInstancesOf(AccountAnalytics.class));
+    }
+
+    @GetMapping("/accountAnalytics/{accountId}")
+    public CompletableFuture<AccountAnalytics> accountAnalyticsByAccountId( @PathVariable String accountId){
+        return queryGateway.query(new GetAccountAnalyticsByAccountId(accountId), ResponseTypes.instanceOf(AccountAnalytics.class));
     }
 }

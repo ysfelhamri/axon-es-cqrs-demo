@@ -6,6 +6,7 @@ import org.axonframework.queryhandling.QueryHandler;
 import org.axonframework.queryhandling.QueryUpdateEmitter;
 import org.springframework.stereotype.Component;
 import q.jv.analyticsservice.entities.AccountAnalytics;
+import q.jv.analyticsservice.queries.GetAccountAnalyticsByAccountId;
 import q.jv.analyticsservice.queries.GetAllAccountAnalytics;
 import q.jv.analyticsservice.repositories.AccountAnalyticsRepository;
 
@@ -20,5 +21,10 @@ public class AccountAnalyticsQueryHandler {
     @QueryHandler
     public List<AccountAnalytics> on(GetAllAccountAnalytics query){
         return accountAnalyticsRepo.findAll();
+    }
+
+    @QueryHandler
+    public AccountAnalytics on(GetAccountAnalyticsByAccountId query){
+        return accountAnalyticsRepo.findByAccountId(query.getAccountId());
     }
 }
